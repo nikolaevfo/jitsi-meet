@@ -12,7 +12,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            
+
         }
         .name-time_expressions-on {
             width: calc(47% - 48px);
@@ -20,7 +20,7 @@
         .expressions {
             width: calc(53% - 29px);
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             .expression {
                 width: 30px;
                 text-align: center;

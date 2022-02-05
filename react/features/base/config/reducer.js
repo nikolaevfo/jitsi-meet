@@ -1,18 +1,18 @@
 // @flow
 
-import _ from 'lodash';
+import _ from "lodash";
 
-import { CONFERENCE_INFO } from '../../conference/components/constants';
-import { equals, ReducerRegistry } from '../redux';
+import { CONFERENCE_INFO } from "../../conference/components/constants";
+import { equals, ReducerRegistry } from "../redux";
 
 import {
     UPDATE_CONFIG,
     CONFIG_WILL_LOAD,
     LOAD_CONFIG_ERROR,
     SET_CONFIG,
-    OVERWRITE_CONFIG
-} from './actionTypes';
-import { _cleanupConfig } from './functions';
+    OVERWRITE_CONFIG,
+} from "./actionTypes";
+import { _cleanupConfig } from "./functions";
 
 declare var interfaceConfig: Object;
 
@@ -27,6 +27,9 @@ declare var interfaceConfig: Object;
  * @type {Object}
  */
 const INITIAL_NON_RN_STATE = {
+    enableFacialRecognition: true,
+    enableDisplayFacialExpressions: true,
+    defaultLanguage: "sk",
 };
 
 /**
@@ -49,12 +52,16 @@ const INITIAL_RN_STATE = {
     // fastest to merely disable them.
     disableAudioLevels: true,
 
+    enableFacialRecognition: true,
+    enableDisplayFacialExpressions: true,
+    defaultLanguage: "sk",
+
     p2p: {
-        disabledCodec: '',
+        disabledCodec: "",
         disableH264: false, // deprecated
-        preferredCodec: 'H264',
-        preferH264: true // deprecated
-    }
+        preferredCodec: "H264",
+        preferH264: true, // deprecated
+    },
 };
 
 /**
@@ -62,62 +69,65 @@ const INITIAL_RN_STATE = {
  * new configs. Needed in order to keep backwards compatibility.
  */
 const CONFERENCE_HEADER_MAPPING = {
-    hideConferenceTimer: [ 'conference-timer' ],
-    hideConferenceSubject: [ 'subject' ],
-    hideParticipantsStats: [ 'participants-count' ],
-    hideRecordingLabel: [ 'recording', 'local-recording' ]
+    hideConferenceTimer: ["conference-timer"],
+    hideConferenceSubject: ["subject"],
+    hideParticipantsStats: ["participants-count"],
+    hideRecordingLabel: ["recording", "local-recording"],
 };
 
-ReducerRegistry.register('features/base/config', (state = _getInitialState(), action) => {
-    switch (action.type) {
-    case UPDATE_CONFIG:
-        return _updateConfig(state, action);
+ReducerRegistry.register(
+    "features/base/config",
+    (state = _getInitialState(), action) => {
+        switch (action.type) {
+            case UPDATE_CONFIG:
+                return _updateConfig(state, action);
 
-    case CONFIG_WILL_LOAD:
-        return {
-            error: undefined,
+            case CONFIG_WILL_LOAD:
+                return {
+                    error: undefined,
 
-            /**
-            * The URL of the location associated with/configured by this
-            * configuration.
-            *
-            * @type URL
-            */
-            locationURL: action.locationURL
-        };
+                    /**
+                     * The URL of the location associated with/configured by this
+                     * configuration.
+                     *
+                     * @type URL
+                     */
+                    locationURL: action.locationURL,
+                };
 
-    case LOAD_CONFIG_ERROR:
-        // XXX LOAD_CONFIG_ERROR is one of the settlement execution paths of
-        // the asynchronous "loadConfig procedure/process" started with
-        // CONFIG_WILL_LOAD. Due to the asynchronous nature of it, whoever
-        // is settling the process needs to provide proof that they have
-        // started it and that the iteration of the process being completed
-        // now is still of interest to the app.
-        if (state.locationURL === action.locationURL) {
-            return {
-                /**
-                * The {@link Error} which prevented the loading of the
-                * configuration of the associated {@code locationURL}.
-                *
-                * @type Error
-                */
-                error: action.error
-            };
+            case LOAD_CONFIG_ERROR:
+                // XXX LOAD_CONFIG_ERROR is one of the settlement execution paths of
+                // the asynchronous "loadConfig procedure/process" started with
+                // CONFIG_WILL_LOAD. Due to the asynchronous nature of it, whoever
+                // is settling the process needs to provide proof that they have
+                // started it and that the iteration of the process being completed
+                // now is still of interest to the app.
+                if (state.locationURL === action.locationURL) {
+                    return {
+                        /**
+                         * The {@link Error} which prevented the loading of the
+                         * configuration of the associated {@code locationURL}.
+                         *
+                         * @type Error
+                         */
+                        error: action.error,
+                    };
+                }
+                break;
+
+            case SET_CONFIG:
+                return _setConfig(state, action);
+
+            case OVERWRITE_CONFIG:
+                return {
+                    ...state,
+                    ...action.config,
+                };
         }
-        break;
 
-    case SET_CONFIG:
-        return _setConfig(state, action);
-
-    case OVERWRITE_CONFIG:
-        return {
-            ...state,
-            ...action.config
-        };
+        return state;
     }
-
-    return state;
-});
+);
 
 /**
  * Gets the initial state of the feature base/config. The mandatory
@@ -129,10 +139,9 @@ ReducerRegistry.register('features/base/config', (state = _getInitialState(), ac
  * @returns {Object}
  */
 function _getInitialState() {
-    return (
-        navigator.product === 'ReactNative'
-            ? INITIAL_RN_STATE
-            : INITIAL_NON_RN_STATE);
+    return navigator.product === "ReactNative"
+        ? INITIAL_RN_STATE
+        : INITIAL_NON_RN_STATE;
 }
 
 /**
@@ -163,7 +172,7 @@ function _setConfig(state, { config }) {
             disableAP: true,
             enableNoAudioDetection: false,
             enableNoisyMicDetection: false,
-            enableTalkWhileMuted: false
+            enableTalkWhileMuted: false,
         });
     }
 
@@ -195,13 +204,15 @@ function _getConferenceInfo(config) {
 
     if (conferenceInfo) {
         return {
-            alwaysVisible: conferenceInfo.alwaysVisible ?? [ ...CONFERENCE_INFO.alwaysVisible ],
-            autoHide: conferenceInfo.autoHide ?? [ ...CONFERENCE_INFO.autoHide ]
+            alwaysVisible: conferenceInfo.alwaysVisible ?? [
+                ...CONFERENCE_INFO.alwaysVisible,
+            ],
+            autoHide: conferenceInfo.autoHide ?? [...CONFERENCE_INFO.autoHide],
         };
     }
 
     return {
-        ...CONFERENCE_INFO
+        ...CONFERENCE_INFO,
     };
 }
 
@@ -222,8 +233,11 @@ function _getConferenceInfo(config) {
 function _translateLegacyConfig(oldValue: Object) {
     const newValue = oldValue;
 
-    if (!Array.isArray(oldValue.toolbarButtons)
-            && typeof interfaceConfig === 'object' && Array.isArray(interfaceConfig.TOOLBAR_BUTTONS)) {
+    if (
+        !Array.isArray(oldValue.toolbarButtons) &&
+        typeof interfaceConfig === "object" &&
+        Array.isArray(interfaceConfig.TOOLBAR_BUTTONS)
+    ) {
         newValue.toolbarButtons = interfaceConfig.TOOLBAR_BUTTONS;
     }
 
@@ -231,60 +245,86 @@ function _translateLegacyConfig(oldValue: Object) {
         oldValue.toolbarConfig = {};
     }
 
-    if (typeof oldValue.toolbarConfig.alwaysVisible !== 'boolean'
-        && typeof interfaceConfig === 'object'
-        && typeof interfaceConfig.TOOLBAR_ALWAYS_VISIBLE === 'boolean') {
-        newValue.toolbarConfig.alwaysVisible = interfaceConfig.TOOLBAR_ALWAYS_VISIBLE;
+    if (
+        typeof oldValue.toolbarConfig.alwaysVisible !== "boolean" &&
+        typeof interfaceConfig === "object" &&
+        typeof interfaceConfig.TOOLBAR_ALWAYS_VISIBLE === "boolean"
+    ) {
+        newValue.toolbarConfig.alwaysVisible =
+            interfaceConfig.TOOLBAR_ALWAYS_VISIBLE;
     }
 
-    if (typeof oldValue.toolbarConfig.initialTimeout !== 'number'
-        && typeof interfaceConfig === 'object'
-        && typeof interfaceConfig.INITIAL_TOOLBAR_TIMEOUT === 'number') {
-        newValue.toolbarConfig.initialTimeout = interfaceConfig.INITIAL_TOOLBAR_TIMEOUT;
+    if (
+        typeof oldValue.toolbarConfig.initialTimeout !== "number" &&
+        typeof interfaceConfig === "object" &&
+        typeof interfaceConfig.INITIAL_TOOLBAR_TIMEOUT === "number"
+    ) {
+        newValue.toolbarConfig.initialTimeout =
+            interfaceConfig.INITIAL_TOOLBAR_TIMEOUT;
     }
 
-    if (typeof oldValue.toolbarConfig.timeout !== 'number'
-        && typeof interfaceConfig === 'object'
-        && typeof interfaceConfig.TOOLBAR_TIMEOUT === 'number') {
+    if (
+        typeof oldValue.toolbarConfig.timeout !== "number" &&
+        typeof interfaceConfig === "object" &&
+        typeof interfaceConfig.TOOLBAR_TIMEOUT === "number"
+    ) {
         newValue.toolbarConfig.timeout = interfaceConfig.TOOLBAR_TIMEOUT;
     }
 
-    const filteredConferenceInfo = Object.keys(CONFERENCE_HEADER_MAPPING).filter(key => oldValue[key]);
+    const filteredConferenceInfo = Object.keys(
+        CONFERENCE_HEADER_MAPPING
+    ).filter((key) => oldValue[key]);
 
     if (filteredConferenceInfo.length) {
         newValue.conferenceInfo = _getConferenceInfo(oldValue);
 
-        filteredConferenceInfo.forEach(key => {
+        filteredConferenceInfo.forEach((key) => {
             // hideRecordingLabel does not mean not render it at all, but autoHide it
-            if (key === 'hideRecordingLabel') {
-                newValue.conferenceInfo.alwaysVisible
-                    = newValue.conferenceInfo.alwaysVisible.filter(c => !CONFERENCE_HEADER_MAPPING[key].includes(c));
-                newValue.conferenceInfo.autoHide
-                    = _.union(newValue.conferenceInfo.autoHide, CONFERENCE_HEADER_MAPPING[key]);
+            if (key === "hideRecordingLabel") {
+                newValue.conferenceInfo.alwaysVisible =
+                    newValue.conferenceInfo.alwaysVisible.filter(
+                        (c) => !CONFERENCE_HEADER_MAPPING[key].includes(c)
+                    );
+                newValue.conferenceInfo.autoHide = _.union(
+                    newValue.conferenceInfo.autoHide,
+                    CONFERENCE_HEADER_MAPPING[key]
+                );
             } else {
-                newValue.conferenceInfo.alwaysVisible
-                    = newValue.conferenceInfo.alwaysVisible.filter(c => !CONFERENCE_HEADER_MAPPING[key].includes(c));
-                newValue.conferenceInfo.autoHide
-                    = newValue.conferenceInfo.autoHide.filter(c => !CONFERENCE_HEADER_MAPPING[key].includes(c));
+                newValue.conferenceInfo.alwaysVisible =
+                    newValue.conferenceInfo.alwaysVisible.filter(
+                        (c) => !CONFERENCE_HEADER_MAPPING[key].includes(c)
+                    );
+                newValue.conferenceInfo.autoHide =
+                    newValue.conferenceInfo.autoHide.filter(
+                        (c) => !CONFERENCE_HEADER_MAPPING[key].includes(c)
+                    );
             }
         });
     }
 
-    if (!oldValue.connectionIndicators
-            && typeof interfaceConfig === 'object'
-            && (interfaceConfig.hasOwnProperty('CONNECTION_INDICATOR_DISABLED')
-                || interfaceConfig.hasOwnProperty('CONNECTION_INDICATOR_AUTO_HIDE_ENABLED')
-                || interfaceConfig.hasOwnProperty('CONNECTION_INDICATOR_AUTO_HIDE_TIMEOUT'))) {
+    if (
+        !oldValue.connectionIndicators &&
+        typeof interfaceConfig === "object" &&
+        (interfaceConfig.hasOwnProperty("CONNECTION_INDICATOR_DISABLED") ||
+            interfaceConfig.hasOwnProperty(
+                "CONNECTION_INDICATOR_AUTO_HIDE_ENABLED"
+            ) ||
+            interfaceConfig.hasOwnProperty(
+                "CONNECTION_INDICATOR_AUTO_HIDE_TIMEOUT"
+            ))
+    ) {
         newValue.connectionIndicators = {
             disabled: interfaceConfig.CONNECTION_INDICATOR_DISABLED,
             autoHide: interfaceConfig.CONNECTION_INDICATOR_AUTO_HIDE_ENABLED,
-            autoHideTimeout: interfaceConfig.CONNECTION_INDICATOR_AUTO_HIDE_TIMEOUT
+            autoHideTimeout:
+                interfaceConfig.CONNECTION_INDICATOR_AUTO_HIDE_TIMEOUT,
         };
     }
 
     newValue.prejoinConfig = oldValue.prejoinConfig || {};
-    if (oldValue.hasOwnProperty('prejoinPageEnabled')
-        && !newValue.prejoinConfig.hasOwnProperty('enabled')
+    if (
+        oldValue.hasOwnProperty("prejoinPageEnabled") &&
+        !newValue.prejoinConfig.hasOwnProperty("enabled")
     ) {
         newValue.prejoinConfig.enabled = oldValue.prejoinPageEnabled;
     }
@@ -292,33 +332,41 @@ function _translateLegacyConfig(oldValue: Object) {
     newValue.disabledSounds = newValue.disabledSounds || [];
 
     if (oldValue.disableJoinLeaveSounds) {
-        newValue.disabledSounds.unshift('PARTICIPANT_LEFT_SOUND', 'PARTICIPANT_JOINED_SOUND');
+        newValue.disabledSounds.unshift(
+            "PARTICIPANT_LEFT_SOUND",
+            "PARTICIPANT_JOINED_SOUND"
+        );
     }
 
     if (oldValue.disableRecordAudioNotification) {
         newValue.disabledSounds.unshift(
-            'RECORDING_ON_SOUND',
-            'RECORDING_OFF_SOUND',
-            'LIVE_STREAMING_ON_SOUND',
-            'LIVE_STREAMING_OFF_SOUND'
+            "RECORDING_ON_SOUND",
+            "RECORDING_OFF_SOUND",
+            "LIVE_STREAMING_ON_SOUND",
+            "LIVE_STREAMING_OFF_SOUND"
         );
     }
 
     if (oldValue.disableIncomingMessageSound) {
-        newValue.disabledSounds.unshift('INCOMING_MSG_SOUND');
+        newValue.disabledSounds.unshift("INCOMING_MSG_SOUND");
     }
 
     if (oldValue.stereo || oldValue.opusMaxAverageBitrate) {
         newValue.audioQuality = {
-            opusMaxAverageBitrate: oldValue.audioQuality?.opusMaxAverageBitrate ?? oldValue.opusMaxAverageBitrate,
-            stereo: oldValue.audioQuality?.stereo ?? oldValue.stereo
+            opusMaxAverageBitrate:
+                oldValue.audioQuality?.opusMaxAverageBitrate ??
+                oldValue.opusMaxAverageBitrate,
+            stereo: oldValue.audioQuality?.stereo ?? oldValue.stereo,
         };
     }
 
-    if (oldValue.disableModeratorIndicator === undefined
-        && typeof interfaceConfig === 'object'
-        && interfaceConfig.hasOwnProperty('DISABLE_FOCUS_INDICATOR')) {
-        newValue.disableModeratorIndicator = interfaceConfig.DISABLE_FOCUS_INDICATOR;
+    if (
+        oldValue.disableModeratorIndicator === undefined &&
+        typeof interfaceConfig === "object" &&
+        interfaceConfig.hasOwnProperty("DISABLE_FOCUS_INDICATOR")
+    ) {
+        newValue.disableModeratorIndicator =
+            interfaceConfig.DISABLE_FOCUS_INDICATOR;
     }
 
     newValue.e2ee = newValue.e2ee || {};
@@ -327,23 +375,28 @@ function _translateLegacyConfig(oldValue: Object) {
         newValue.e2ee.e2eeLabels = oldValue.e2eeLabels;
     }
 
-    if (oldValue.defaultLocalDisplayName === undefined
-        && typeof interfaceConfig === 'object'
-        && interfaceConfig.hasOwnProperty('DEFAULT_LOCAL_DISPLAY_NAME')) {
-        newValue.defaultLocalDisplayName = interfaceConfig.DEFAULT_LOCAL_DISPLAY_NAME;
+    if (
+        oldValue.defaultLocalDisplayName === undefined &&
+        typeof interfaceConfig === "object" &&
+        interfaceConfig.hasOwnProperty("DEFAULT_LOCAL_DISPLAY_NAME")
+    ) {
+        newValue.defaultLocalDisplayName =
+            interfaceConfig.DEFAULT_LOCAL_DISPLAY_NAME;
     }
 
-    newValue.defaultLocalDisplayName
-        = newValue.defaultLocalDisplayName || 'me';
+    newValue.defaultLocalDisplayName = newValue.defaultLocalDisplayName || "me";
 
-    if (oldValue.defaultRemoteDisplayName === undefined
-        && typeof interfaceConfig === 'object'
-        && interfaceConfig.hasOwnProperty('DEFAULT_REMOTE_DISPLAY_NAME')) {
-        newValue.defaultRemoteDisplayName = interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME;
+    if (
+        oldValue.defaultRemoteDisplayName === undefined &&
+        typeof interfaceConfig === "object" &&
+        interfaceConfig.hasOwnProperty("DEFAULT_REMOTE_DISPLAY_NAME")
+    ) {
+        newValue.defaultRemoteDisplayName =
+            interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME;
     }
 
-    newValue.defaultRemoteDisplayName
-        = newValue.defaultRemoteDisplayName || 'Fellow Jitster';
+    newValue.defaultRemoteDisplayName =
+        newValue.defaultRemoteDisplayName || "Fellow Jitster";
 
     return newValue;
 }
