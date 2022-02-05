@@ -163,7 +163,7 @@ export function startFacialRecognition() {
             return;
         }
         dispatch({ type: START_FACIAL_RECOGNITION });
-        logger.log("Start face recognition");
+        logger.log("+++++++ Start face recognition +++++++");
         const firstVideoTrack = stream.getVideoTracks()[0];
 
         // $FlowFixMe
@@ -179,10 +179,12 @@ export function startFacialRecognition() {
 
             baseUrl = `${app.src.substring(0, idx)}/`;
         }
+        logger.log(`+++++++ baseUrl ${baseUrl} +++++++`);
 
         let isViolation = true;
         let isBadViolation = true;
 
+        logger.log("+++++++ before set interval +++++++");
         Promise.all([
             faceapi.nets.tinyFaceDetector.loadFromUri(baseUrl),
             faceapi.nets.faceLandmark68Net.loadFromUri(baseUrl),
