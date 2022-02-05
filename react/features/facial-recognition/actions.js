@@ -1,5 +1,6 @@
 // @flow
 import * as faceapi from "face-api.js";
+
 import { getLocalVideoTrack } from "../base/tracks";
 
 import "image-capture";
@@ -186,6 +187,7 @@ export function startFacialRecognition() {
             faceapi.nets.tinyFaceDetector.loadFromUri(baseUrl),
             faceapi.nets.faceLandmark68Net.loadFromUri(baseUrl),
         ]).then(() => {
+            logger.log("+++++++ set interval +++++++");
             setInterval(async () => {
                 const localVideoTrackPropagation = getLocalVideoTrack(
                     state["features/base/tracks"]
