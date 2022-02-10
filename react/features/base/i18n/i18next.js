@@ -7,7 +7,7 @@ import i18next from "i18next";
 import I18nextXHRBackend from "i18next-xhr-backend";
 
 import LANGUAGES_RESOURCES from "../../../../lang/languages.json";
-import MAIN_RESOURCES from "../../../../lang/main.json";
+import MAIN_RESOURCES from "../../../../lang/main-sk.json";
 
 import { I18NEXT_INITIALIZED, LANGUAGE_CHANGED } from "./actionTypes";
 import languageDetector from "./languageDetector";
