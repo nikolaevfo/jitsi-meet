@@ -61,10 +61,8 @@ const options = {
 
 i18next
     .use(navigator.product === "ReactNative" ? {} : I18nextXHRBackend)
+    .use(languageDetector)
     .init(options);
-
-// .use(languageDetector)
-// .init(options);
 
 // Add default language which is preloaded from the source code.
 i18next.addResourceBundle(
