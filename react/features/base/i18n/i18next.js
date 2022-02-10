@@ -2,15 +2,15 @@
 
 declare var APP: Object;
 
-import COUNTRIES_RESOURCES from 'i18n-iso-countries/langs/en.json';
-import i18next from 'i18next';
-import I18nextXHRBackend from 'i18next-xhr-backend';
+import COUNTRIES_RESOURCES from "i18n-iso-countries/langs/en.json";
+import i18next from "i18next";
+import I18nextXHRBackend from "i18next-xhr-backend";
 
-import LANGUAGES_RESOURCES from '../../../../lang/languages.json';
-import MAIN_RESOURCES from '../../../../lang/main.json';
+import LANGUAGES_RESOURCES from "../../../../lang/languages.json";
+import MAIN_RESOURCES from "../../../../lang/main.json";
 
-import { I18NEXT_INITIALIZED, LANGUAGE_CHANGED } from './actionTypes';
-import languageDetector from './languageDetector';
+import { I18NEXT_INITIALIZED, LANGUAGE_CHANGED } from "./actionTypes";
+import languageDetector from "./languageDetector";
 
 /**
  * The available/supported languages.
@@ -28,7 +28,7 @@ export const LANGUAGES: Array<string> = Object.keys(LANGUAGES_RESOURCES);
  * @public
  * @type {string} The default language.
  */
-export const DEFAULT_LANGUAGE = 'en';
+export const DEFAULT_LANGUAGE = "sk";
 
 /**
  * The options to initialize i18next with.
@@ -37,66 +37,71 @@ export const DEFAULT_LANGUAGE = 'en';
  */
 const options = {
     backend: {
-        loadPath: 'lang/{{ns}}-{{lng}}.json'
+        loadPath: "lang/{{ns}}-{{lng}}.json",
     },
-    defaultNS: 'main',
+    defaultNS: "main",
     fallbackLng: DEFAULT_LANGUAGE,
     interpolation: {
-        escapeValue: false // not needed for react as it escapes by default
+        escapeValue: false, // not needed for react as it escapes by default
     },
-    load: 'languageOnly',
-    ns: [ 'main', 'languages', 'countries' ],
+    load: "languageOnly",
+    ns: ["main", "languages", "countries"],
     react: {
         // re-render when a new resource bundle is added
-        bindI18nStore: 'added',
-        useSuspense: false
+        bindI18nStore: "added",
+        useSuspense: false,
     },
     returnEmptyString: false,
     returnNull: false,
 
     // XXX i18next modifies the array lngWhitelist so make sure to clone
     // LANGUAGES.
-    whitelist: LANGUAGES.slice()
+    whitelist: LANGUAGES.slice(),
 };
 
 i18next
-    .use(navigator.product === 'ReactNative' ? {} : I18nextXHRBackend)
-    .use(languageDetector)
+    .use(navigator.product === "ReactNative" ? {} : I18nextXHRBackend)
     .init(options);
+
+// .use(languageDetector)
+// .init(options);
 
 // Add default language which is preloaded from the source code.
 i18next.addResourceBundle(
     DEFAULT_LANGUAGE,
-    'countries',
+    "countries",
     COUNTRIES_RESOURCES,
     /* deep */ true,
-    /* overwrite */ true);
+    /* overwrite */ true
+);
 i18next.addResourceBundle(
     DEFAULT_LANGUAGE,
-    'languages',
+    "languages",
     LANGUAGES_RESOURCES,
     /* deep */ true,
-    /* overwrite */ true);
+    /* overwrite */ true
+);
 i18next.addResourceBundle(
     DEFAULT_LANGUAGE,
-    'main',
+    "main",
     MAIN_RESOURCES,
     /* deep */ true,
-    /* overwrite */ true);
+    /* overwrite */ true
+);
 
 // Add builtin languages.
 // XXX: Note we are using require here, because we want the side-effects of the
 // import, but imports can only be placed at the top, and it would be too early,
 // since i18next is not yet initialized at that point.
-require('./BuiltinLanguages');
+require("./BuiltinLanguages");
 
 // Label change through dynamic branding is available only for web
-if (typeof APP !== 'undefined') {
-    i18next.on('initialized', () => {
+if (typeof APP !== "undefined") {
+    i18next.on("initialized", () => {
         APP.store.dispatch({ type: I18NEXT_INITIALIZED });
     });
 
-    i18next.on('languageChanged', () => {
+    i18next.on("languageChanged", () => {
         APP.store.dispatch({ type: LANGUAGE_CHANGED });
     });
 }
