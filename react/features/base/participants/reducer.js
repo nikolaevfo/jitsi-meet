@@ -431,13 +431,14 @@ ReducerRegistry.register(
  * @returns {string}
  */
 function _getDisplayName(state: Object, name: string): string {
-    const config = state["features/base/config"];
+    // const config = state["features/base/config"];
 
-    return (
-        name ??
-        (config?.defaultRemoteDisplayName ||
-            `Fellow Jitster ${Math.floor(Math.random() * 1000)}`)
-    );
+    // return (
+    //     name ??
+    //     (config?.defaultRemoteDisplayName ||
+    //         `Fellow Jitster ${Math.floor(Math.random() * 1000)}`)
+    // );
+    return `Fellow Jitster ${Math.floor(Math.random() * 1000)}`;
 }
 
 /**
