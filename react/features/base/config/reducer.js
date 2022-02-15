@@ -397,9 +397,7 @@ function _translateLegacyConfig(oldValue: Object) {
 
     // newValue.defaultRemoteDisplayName =
     //     newValue.defaultRemoteDisplayName || "Fellow Jitster";
-    newValue.defaultRemoteDisplayName = `Fellow ${Math.floor(
-        Math.random() * 1000
-    )}`;
+    newValue.defaultRemoteDisplayName = undefined;
 
     return newValue;
 }

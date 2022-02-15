@@ -289,7 +289,8 @@ ReducerRegistry.register(
                 // Insert the new participant.
                 const displayName = _getDisplayName(state, name);
                 console.log(displayName);
-                console.log("displayName");
+                console.log("new Name");
+                console.log(state);
                 const sortedRemoteParticipants = Array.from(
                     state.sortedRemoteParticipants
                 );
