@@ -438,7 +438,7 @@ function _getDisplayName(state: Object, name: string): string {
     //     (config?.defaultRemoteDisplayName ||
     //         `Fellow Jitster ${Math.floor(Math.random() * 1000)}`)
     // );
-    return `Fellow Jitster ${Math.floor(Math.random() * 1000)}`;
+    return `Fellow Jitster 10 ${Math.floor(Math.random() * 1000)}`;
 }
 
 /**
