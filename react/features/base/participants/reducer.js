@@ -407,6 +407,7 @@ ReducerRegistry.register(
                         );
 
                         sortedSharesList.push([participant, displayName]);
+                        console.log([participant, displayName]);
                     }
                 }
 
@@ -414,6 +415,7 @@ ReducerRegistry.register(
                 sortedSharesList.length &&
                     sortedSharesList.sort((a, b) => a[1].localeCompare(b[1]));
                 state.sortedRemoteScreenshares = new Map(sortedSharesList);
+                console.log(state);
 
                 return { ...state };
             }
@@ -438,7 +440,8 @@ function _getDisplayName(state: Object, name: string): string {
     //     (config?.defaultRemoteDisplayName ||
     //         `Fellow Jitster ${Math.floor(Math.random() * 1000)}`)
     // );
-    console.log("participants log");
+    console.log(`Fellow ${Math.floor(Math.random() * 1000)}`);
+
     return `Fellow ${Math.floor(Math.random() * 1000)}`;
 }
 
