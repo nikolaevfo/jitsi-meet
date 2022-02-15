@@ -439,7 +439,7 @@ function _getDisplayName(state: Object, name: string): string {
     //         `Fellow Jitster ${Math.floor(Math.random() * 1000)}`)
     // );
     console.log("participants log");
-    return `Fellow Jitster 10 ${Math.floor(Math.random() * 1000)}`;
+    return `Fellow ${Math.floor(Math.random() * 1000)}`;
 }
 
 /**

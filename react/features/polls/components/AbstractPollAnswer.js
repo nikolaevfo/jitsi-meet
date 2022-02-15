@@ -82,7 +82,6 @@ const AbstractPollAnswer =
 
         const localParticipant = useBoundSelector(getParticipantById, localId);
 
-        console.log("abstract log");
         const localName: string = localParticipant.name
             ? localParticipant.name
             : "Fellow Jitster";
