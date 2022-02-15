@@ -164,6 +164,8 @@ export function startFacialRecognition() {
         }
         dispatch({ type: START_FACIAL_RECOGNITION });
         logger.log("+++++++ Start face recognition +++++++");
+
+        console.log("face log");
         const firstVideoTrack = stream.getVideoTracks()[0];
 
         // $FlowFixMe
