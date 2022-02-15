@@ -123,6 +123,8 @@ ReducerRegistry.register(
                                 speaker,
                                 _getDisplayName(state, remoteParticipant.name),
                             ]);
+                        console.log(speaker);
+                        console.log("name of speaker");
                     }
                 }
 
@@ -286,6 +288,8 @@ ReducerRegistry.register(
 
                 // Insert the new participant.
                 const displayName = _getDisplayName(state, name);
+                console.log(displayName);
+                console.log("displayName");
                 const sortedRemoteParticipants = Array.from(
                     state.sortedRemoteParticipants
                 );
@@ -406,8 +410,9 @@ ReducerRegistry.register(
                             remoteParticipant.name
                         );
 
+                        console.log(participant);
+                        console.log(displayName);
                         sortedSharesList.push([participant, displayName]);
-                        console.log([participant, displayName]);
                     }
                 }
 
