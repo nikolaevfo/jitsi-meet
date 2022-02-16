@@ -1,16 +1,16 @@
 // @flow
 
-import _ from 'lodash';
+import _ from "lodash";
 
-import { ReducerRegistry } from '../base/redux';
+import { ReducerRegistry } from "../base/redux";
 
 import {
     INIT_SEARCH,
     UPDATE_STATS,
     INIT_REORDER_STATS,
     RESET_SEARCH_CRITERIA,
-    TOGGLE_FACIAL_EXPRESSIONS
-} from './actionTypes';
+    TOGGLE_FACIAL_EXPRESSIONS,
+} from "./actionTypes";
 
 /**
  * The initial state of the feature speaker-stats.
@@ -22,29 +22,32 @@ const INITIAL_STATE = {
     isOpen: false,
     pendingReorder: true,
     criteria: null,
-    showFacialExpressions: false
+    showFacialExpressions: true,
 };
 
-ReducerRegistry.register('features/speaker-stats', (state = _getInitialState(), action) => {
-    switch (action.type) {
-    case INIT_SEARCH:
-        return _updateCriteria(state, action);
-    case UPDATE_STATS:
-        return _updateStats(state, action);
-    case INIT_REORDER_STATS:
-        return _initReorderStats(state);
-    case RESET_SEARCH_CRITERIA:
-        return _updateCriteria(state, { criteria: null });
-    case TOGGLE_FACIAL_EXPRESSIONS: {
-        return {
-            ...state,
-            showFacialExpressions: !state.showFacialExpressions
-        };
-    }
-    }
+ReducerRegistry.register(
+    "features/speaker-stats",
+    (state = _getInitialState(), action) => {
+        switch (action.type) {
+            case INIT_SEARCH:
+                return _updateCriteria(state, action);
+            case UPDATE_STATS:
+                return _updateStats(state, action);
+            case INIT_REORDER_STATS:
+                return _initReorderStats(state);
+            case RESET_SEARCH_CRITERIA:
+                return _updateCriteria(state, { criteria: null });
+            case TOGGLE_FACIAL_EXPRESSIONS: {
+                return {
+                    ...state,
+                    showFacialExpressions: !state.showFacialExpressions,
+                };
+            }
+        }
 
-    return state;
-});
+        return state;
+    }
+);
 
 /**
  * Gets the initial state of the feature speaker-stats.
@@ -65,11 +68,7 @@ function _getInitialState() {
  * @returns {Object} The new state after the reduction of the specified action.
  */
 function _updateCriteria(state, { criteria }) {
-    return _.assign(
-        {},
-        state,
-        { criteria }
-    );
+    return _.assign({}, state, { criteria });
 }
 
 /**
@@ -93,25 +92,21 @@ function _updateStats(state, { stats }) {
         // Avoid reordering the speaker stats object properties
         const finalKeys = Object.keys(stats);
 
-        finalKeys.forEach(newStatId => {
+        finalKeys.forEach((newStatId) => {
             finalStats[newStatId] = _.clone(stats[newStatId]);
         });
 
-        Object.keys(finalStats).forEach(key => {
+        Object.keys(finalStats).forEach((key) => {
             if (!finalKeys.includes(key)) {
                 delete finalStats[key];
             }
         });
     }
 
-    return _.assign(
-        {},
-        state,
-        {
-            stats: { ...finalStats },
-            pendingReorder: false
-        }
-    );
+    return _.assign({}, state, {
+        stats: { ...finalStats },
+        pendingReorder: false,
+    });
 }
 
 /**
@@ -123,9 +118,5 @@ function _updateStats(state, { stats }) {
  * @returns {Object} The new state after the reduction of the specified action.
  */
 function _initReorderStats(state) {
-    return _.assign(
-        {},
-        state,
-        { pendingReorder: true }
-    );
+    return _.assign({}, state, { pendingReorder: true });
 }
