@@ -395,9 +395,8 @@ function _translateLegacyConfig(oldValue: Object) {
             interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME;
     }
 
-    // newValue.defaultRemoteDisplayName =
-    //     newValue.defaultRemoteDisplayName || "Fellow Jitster";
-    newValue.defaultRemoteDisplayName = undefined;
+    newValue.defaultRemoteDisplayName =
+        newValue.defaultRemoteDisplayName || "Fellow Jitster";
 
     return newValue;
 }

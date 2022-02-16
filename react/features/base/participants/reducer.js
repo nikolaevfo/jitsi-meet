@@ -123,8 +123,6 @@ ReducerRegistry.register(
                                 speaker,
                                 _getDisplayName(state, remoteParticipant.name),
                             ]);
-                        console.log(speaker);
-                        console.log("name of speaker");
                     }
                 }
 
@@ -288,9 +286,9 @@ ReducerRegistry.register(
 
                 // Insert the new participant.
                 const displayName = _getDisplayName(state, name);
-                console.log(displayName);
-                console.log("new Name");
-                console.log(state);
+                console.log(`displayName ${displayName}`);
+                console.log(`state ${state}`);
+
                 const sortedRemoteParticipants = Array.from(
                     state.sortedRemoteParticipants
                 );
@@ -303,6 +301,10 @@ ReducerRegistry.register(
                 // The sort order of participants is preserved since Map remembers the original insertion order of the keys.
                 state.sortedRemoteParticipants = new Map(
                     sortedRemoteParticipants
+                );
+
+                console.log(
+                    `sortedRemoteParticipants ${sortedRemoteParticipants}`
                 );
 
                 if (isFakeParticipant) {
@@ -410,9 +412,6 @@ ReducerRegistry.register(
                             state,
                             remoteParticipant.name
                         );
-
-                        console.log(participant);
-                        console.log(displayName);
                         sortedSharesList.push([participant, displayName]);
                     }
                 }
@@ -446,8 +445,10 @@ function _getDisplayName(state: Object, name: string): string {
     //     (config?.defaultRemoteDisplayName ||
     //         `Fellow Jitster ${Math.floor(Math.random() * 1000)}`)
     // );
+    const randomNumber = Math.floor(Math.random() * 1000);
+    console.log(randomNumber);
 
-    return `Fellow ${Math.floor(Math.random() * 1000)}`;
+    return `Fellow ${randomNumber}`;
 }
 
 /**
