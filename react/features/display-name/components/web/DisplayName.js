@@ -222,8 +222,8 @@ class DisplayName extends Component<Props, State> {
                     id={elementID}
                     onClick={this._onStartEditing}
                 >
-                    {/* {appendSuffix(_nameToDisplay, displayNameSuffix)} */}
-                    {appendSuffix("", displayNameSuffix)}
+                    {appendSuffix(_nameToDisplay, displayNameSuffix)}
+                    {/* {appendSuffix("", displayNameSuffix)} */}
                 </span>
             </Tooltip>
         );

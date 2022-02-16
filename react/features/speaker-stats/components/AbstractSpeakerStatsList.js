@@ -107,7 +107,9 @@ const abstractSpeakerStatsList = (
         props.hidden = statsModel.hidden;
         props.showFacialExpressions = showFacialExpressions;
         // props.displayName = statsModel.getDisplayName() || defaultRemoteDisplayName;
-        props.displayName = `Fellow ${userId}`;
+        props.displayName = `${
+            statsModel.getDisplayName() || defaultRemoteDisplayName
+        } (${userId})`;
         if (itemStyles) {
             props.styles = itemStyles;
         }

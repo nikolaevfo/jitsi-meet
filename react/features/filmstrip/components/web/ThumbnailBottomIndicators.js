@@ -81,7 +81,7 @@ const ThumbnailBottomIndicators = ({
                         allowEditing={local ? _allowEditing : false}
                         currentLayout={currentLayout}
                         // displayNameSuffix = { local ? _defaultLocalDisplayName : '' }
-                        displayNameSuffix={`Fellow ${participantId}`}
+                        displayNameSuffix={`${participantId}`}
                         elementID={
                             local
                                 ? "localDisplayName"

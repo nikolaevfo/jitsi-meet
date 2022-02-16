@@ -10,5 +10,6 @@
 export function appendSuffix(displayName: string, suffix: string = "") {
     // return `${displayName || suffix}${
     //     displayName && suffix && displayName !== suffix ? ` (${suffix})` : ''}`;
-    return `${suffix}`;
+    // return `${suffix}`;
+    return `${displayName ? displayName : ""} (${suffix})`;
 }

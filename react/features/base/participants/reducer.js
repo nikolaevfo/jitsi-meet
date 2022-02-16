@@ -286,8 +286,6 @@ ReducerRegistry.register(
 
                 // Insert the new participant.
                 const displayName = _getDisplayName(state, name);
-                console.log(`displayName ${displayName}`);
-                console.log(`state ${state}`);
 
                 const sortedRemoteParticipants = Array.from(
                     state.sortedRemoteParticipants
@@ -301,10 +299,6 @@ ReducerRegistry.register(
                 // The sort order of participants is preserved since Map remembers the original insertion order of the keys.
                 state.sortedRemoteParticipants = new Map(
                     sortedRemoteParticipants
-                );
-
-                console.log(
-                    `sortedRemoteParticipants ${sortedRemoteParticipants}`
                 );
 
                 if (isFakeParticipant) {
@@ -420,7 +414,6 @@ ReducerRegistry.register(
                 sortedSharesList.length &&
                     sortedSharesList.sort((a, b) => a[1].localeCompare(b[1]));
                 state.sortedRemoteScreenshares = new Map(sortedSharesList);
-                console.log(state);
 
                 return { ...state };
             }
@@ -438,17 +431,13 @@ ReducerRegistry.register(
  * @returns {string}
  */
 function _getDisplayName(state: Object, name: string): string {
-    // const config = state["features/base/config"];
+    const config = state["features/base/config"];
 
-    // return (
-    //     name ??
-    //     (config?.defaultRemoteDisplayName ||
-    //         `Fellow Jitster ${Math.floor(Math.random() * 1000)}`)
-    // );
-    const randomNumber = Math.floor(Math.random() * 1000);
-    console.log(randomNumber);
-
-    return `Fellow ${randomNumber}`;
+    return (
+        name ??
+        (config?.defaultRemoteDisplayName ||
+            `Fellow Jitster ${Math.floor(Math.random() * 1000)}`)
+    );
 }
 
 /**
